@@ -7,7 +7,7 @@ const openai = new OpenAIApi(configuration);
 
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") {
@@ -17,12 +17,6 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST requests allowed" });
   }
-
-  const { Configuration, OpenAIApi } = require("openai");
-  const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-  const openai = new OpenAIApi(configuration);
 
   const { prompt } = req.body;
 
@@ -35,7 +29,7 @@ module.exports = async (req, res) => {
     const reply = completion.data.choices[0].message.content;
     res.status(200).json({ reply });
   } catch (err) {
-    console.error(err);
+    console.error("OpenAI API error:", err.response ? err.response.data : err.message);
     res.status(500).json({ error: "Something went wrong" });
   }
 };
