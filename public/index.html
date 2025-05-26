@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ask AI</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 2rem;
+      max-width: 700px;
+      width: 100%;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 2px solid #002D72;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #002D72;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 0.5rem;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #0071CE;
+      box-shadow: 0 0 0 3px rgba(0, 113, 206, 0.3);
+    }
+
+    button {
+      margin-top: 1rem;
+      background-color: #0071CE;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .response {
+      margin-top: 1.5rem;
+      white-space: pre-wrap;
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    .spinner {
+      margin-top: 1.5rem;
+      width: 32px;
+      height: 32px;
+      border: 4px solid #ccc;
+      border-top: 4px solid #0071CE;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-labelledby="ask-ai-header">
+    <h1 id="ask-ai-header">Ask AI</h1>
+    <form id="chatForm" aria-label="Chat input form">
+      <label for="prompt">Type your request:</label>
+      <textarea id="prompt" name="prompt" required placeholder="E.g., Help me write a thank-you note."></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <div id="spinner" class="spinner" style="display:none;"></div>
+    <div id="output" class="response" style="display:none;"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("chatForm");
+    const textarea = document.getElementById("prompt");
+    const spinner = document.getElementById("spinner");
+    const output = document.getElementById("output");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const prompt = textarea.value.trim();
+      if (!prompt) return;
+
+      spinner.style.display = "block";
+      output.style.display = "none";
+      output.textContent = "";
+
+      try {
+        const res = await fetch("https://ask-ai-chi.vercel.app/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+        const data = await res.json();
+        spinner.style.display = "none";
+        output.textContent = data.reply || "No reply from the AI.";
+        output.style.display = "block";
+      } catch (err) {
+        spinner.style.display = "none";
+        output.textContent = "Something went wrong. Try again later.";
+        output.style.display = "block";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
