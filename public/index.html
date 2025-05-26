@@ -31,7 +31,7 @@
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
       color: #002D72;
       margin-bottom: 1rem;
     }
@@ -40,6 +40,7 @@
       font-weight: bold;
       display: block;
       margin-bottom: 0.5rem;
+      font-size: clamp(1rem, 2vw, 1.125rem);
     }
 
     textarea {
@@ -67,6 +68,7 @@
       border: none;
       border-radius: 0.5rem;
       cursor: pointer;
+      width: 100%;
     }
 
     button:hover {
@@ -81,6 +83,7 @@
       border-radius: 0.5rem;
       border: 1px solid #ccc;
       width: 100%;
+      overflow-x: auto;
     }
 
     .spinner {
@@ -97,6 +100,21 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem;
+      }
+
+      textarea {
+        font-size: 0.95rem;
+      }
+
+      button {
+        font-size: 0.95rem;
+        padding: 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -104,8 +122,8 @@
     <h1 id="ask-ai-header">Ask AI</h1>
     <form id="chatForm" aria-label="Chat input form">
       <label for="prompt">Type your request:</label>
-      <textarea id="prompt" name="prompt" required placeholder="E.g., Help me write a thank-you note."></textarea>
-      <button type="submit">Send</button>
+      <textarea id="prompt" name="prompt" required placeholder="Paste the provided prompt here, or write your own."></textarea>
+      <button type="submit">Submit</button>
     </form>
     <div id="spinner" class="spinner" style="display:none;"></div>
     <div id="output" class="response" style="display:none;"></div>
