@@ -1,11 +1,10 @@
-const { Configuration, OpenAIApi } = require("openai");
+import OpenAI from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -21,15 +20,14 @@ module.exports = async (req, res) => {
   const { prompt } = req.body;
 
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
     });
 
-    const reply = completion.data.choices[0].message.content;
-    res.status(200).json({ reply });
+    res.status(200).json({ reply: completion.choices[0].message.content });
   } catch (err) {
-    console.error("OpenAI API error:", err.response ? err.response.data : err.message);
+    console.error("OpenAI API error:", err);
     res.status(500).json({ error: "Something went wrong" });
   }
-};
+}
