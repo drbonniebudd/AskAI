@@ -23,6 +23,6 @@ export default async function handler(req, res) {
     res.status(200).json({ reply: completion.choices[0].message.content });
   } catch (err) {
     console.error("OpenAI API error:", err);
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({ error: "Unfortunately, this tool is not working as intended. Please visit ChatGPT.com in a new tab and paste the provided prompt there instead (chat.mjs)." });
   }
 }
