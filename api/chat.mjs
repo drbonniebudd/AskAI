@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // or "gpt-4" if you're approved for it
+      model: "gpt-4", // or "gpt-4" if you're approved for it
       messages: [{ role: "user", content: prompt }],
     });
 
