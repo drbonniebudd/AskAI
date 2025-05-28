@@ -75,7 +75,7 @@
         const data = await res.json();
         output.textContent = data.reply || "No reply from the AI.";
       } catch (err) {
-        output.textContent = "Unfortunately, this tool is not working as intended. Please visit ChatGPT.com in a new tab and paste the provided prompt there instead.";
+        output.textContent = "Unfortunately, this tool is not working as intended. Please visit ChatGPT.com in a new tab and paste the provided prompt there instead (index).";
         console.error(err);
       }
     });
