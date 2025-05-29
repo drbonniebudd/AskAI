@@ -1,37 +1,33 @@
-import { OpenAI } from "openai";
+import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Only POST requests allowed" });
   }
 
-  const { prompt } = req.body;
-
-  if (!prompt) {
-    return res.status(400).json({ error: "Missing prompt in request body" });
-  }
+  const { messages } = req.body;
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4", // or "gpt-4" if you're approved for it
-      messages: [{ role: "user", content: prompt }],
+      model: "gpt-4", // or your custom GPT ID here
+      messages: messages,
     });
 
-    const reply = completion?.choices?.[0]?.message?.content;
-
-    console.log("OpenAI reply:", reply);
-
-    if (!reply) {
-      return res.status(500).json({ error: "No reply from OpenAI." });
-    }
-
-    return res.status(200).json({ reply });
-  } catch (error) {
-    console.error("OpenAI API call failed:", error);
-    return res.status(500).json({ error: "OpenAI API call failed." });
+    res.status(200).json({ reply: completion.choices[0].message.content });
+  } catch (err) {
+    console.error("OpenAI API call failed:", err);
+    res.status(500).json({ error: "OpenAI API call failed" });
   }
 }
