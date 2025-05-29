@@ -105,6 +105,11 @@
         cursor: pointer;
       }
 
+      .submit-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
       .icon-btn {
         position: fixed;
         width: 40px;
@@ -130,22 +135,29 @@
         bottom: 1rem;
         right: 1rem;
       }
+
+      .icon-btn#resetBtn {
+        bottom: 1rem;
+        left: 1rem;
+      }
     </style>
   </head>
   <body>
     <button id="darkToggle" class="icon-btn" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙</button>
     <div class="container">
-      <h1>Practice and Experiment</h1>
+      <h1>Practice and Experimentation Zone</h1>
       <form id="chatForm">
         <textarea id="prompt" placeholder="Paste or type your prompt here." required></textarea>
-        <button type="submit" class="submit-btn">Send</button>
+        <button type="submit" class="submit-btn" disabled>Send</button>
       </form>
       <div id="output" class="response" style="display:none;"><button class="copy-btn" onclick="copyToClipboard()">Copy</button></div>
     </div>
     <button id="printBtn" class="icon-btn" onclick="printResponse()" aria-label="Print response">🖨️</button>
+    <button id="resetBtn" class="icon-btn" onclick="resetChat()" aria-label="Reset conversation">🔄</button>
     <script>
       const chatForm = document.getElementById("chatForm");
       const promptInput = document.getElementById("prompt");
+      const submitBtn = chatForm.querySelector(".submit-btn");
       const output = document.getElementById("output");
       const darkToggle = document.getElementById("darkToggle");
 
@@ -162,6 +174,15 @@
           printWindow.document.close();
           printWindow.print();
         }
+      }
+
+      function resetChat() {
+        promptInput.value = "";
+        output.style.display = "none";
+        output.textContent = "";
+        localStorage.removeItem("lastPrompt");
+        localStorage.removeItem("lastResponse");
+        submitBtn.disabled = true;
       }
 
       function showSpinner() {
@@ -198,6 +219,10 @@
         }
       });
 
+      promptInput.addEventListener("input", () => {
+        submitBtn.disabled = promptInput.value.trim() === "";
+      });
+
       window.onload = () => {
         const savedPrompt = localStorage.getItem("lastPrompt");
         const savedResponse = localStorage.getItem("lastResponse");
@@ -206,6 +231,7 @@
           output.style.display = "block";
           output.innerHTML = `<button class="copy-btn" onclick="copyToClipboard()">Copy</button>${savedResponse}`;
         }
+        submitBtn.disabled = promptInput.value.trim() === "";
       };
     </script>
   </body>
