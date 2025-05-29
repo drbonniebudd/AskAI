@@ -270,13 +270,15 @@
         }
       });
 
-      window.onload = () => {
-        promptInput.focus();
-      };
-window.addEventListener("load", () => {
-  const height = document.body.scrollHeight;
-  parent.postMessage({ type: "setHeight", height }, "*");
-});
+function sendHeight() {
+  const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+  parent.postMessage({ type: 'iframeHeight', height }, '*');
+}
+
+window.addEventListener('load', sendHeight);
+
+const observer = new MutationObserver(sendHeight);
+observer.observe(document.body, { childList: true, subtree: true });
     </script>
   </body>
 </html>
