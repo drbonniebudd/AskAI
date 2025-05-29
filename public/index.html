@@ -144,6 +144,7 @@
           <button type="button" onclick="resetChat()" aria-label="Reset conversation" title="Start Over" tabindex="3" disabled id="resetBtn">🔄</button>
           <button type="button" onclick="printResponse()" aria-label="Print response" title="Print Response" tabindex="4" disabled id="printBtn">🖨️</button>
           <button type="button" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle Dark/Light Mode" tabindex="5" id="darkToggle">🌙</button>
+          <button type="button" onclick="startVoiceInput()" aria-label="Start voice input" title="Voice Mode" tabindex="6" id="voiceBtn">🎤</button>
         </div>
       </form>
       <div id="output" class="response" style="display:none;"><button class="copy-btn" onclick="copyToClipboard()" aria-label="Copy response to clipboard" title="Copy to Clipboard">Copy</button></div>
@@ -156,6 +157,7 @@
       const darkToggle = document.getElementById("darkToggle");
       const resetBtn = document.getElementById("resetBtn");
       const printBtn = document.getElementById("printBtn");
+      const voiceBtn = document.getElementById("voiceBtn");
 
       let conversation = [];
 
@@ -195,6 +197,39 @@
         navigator.clipboard.writeText(text).then(() => {
           alert("Response copied to clipboard!");
         });
+      }
+
+      function startVoiceInput() {
+        if (!('webkitSpeechRecognition' in window)) {
+          alert("Speech recognition is not supported in this browser.");
+          return;
+        }
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          voiceBtn.disabled = true;
+          voiceBtn.textContent = "🎙️";
+        };
+
+        recognition.onend = () => {
+          voiceBtn.disabled = false;
+          voiceBtn.textContent = "🎤";
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          promptInput.value = transcript;
+          promptInput.dispatchEvent(new Event('input'));
+        };
+
+        recognition.onerror = (event) => {
+          console.error("Speech recognition error", event);
+        };
+
+        recognition.start();
       }
 
       chatForm.addEventListener("submit", async (e) => {
