@@ -273,6 +273,10 @@
       window.onload = () => {
         promptInput.focus();
       };
+window.addEventListener("load", () => {
+  const height = document.body.scrollHeight;
+  parent.postMessage({ type: "setHeight", height }, "*");
+});
     </script>
   </body>
 </html>
